@@ -1,9 +1,9 @@
 package customArrayList;
-
 import java.util.Arrays;
 import java.util.Comparator;
 
 public class CustomArrayList<E> {
+
     private Object[] elements;
     private final static int INITIAL_CAPACITY = 10;
     private int size;
@@ -24,12 +24,13 @@ public class CustomArrayList<E> {
     }
 
     public E get(int index) {
+        rangeCheck(index);
         E element = (E) this.elements[index];
         return element;
     }
 
     public E remove(int index) {
-        if (index > size) {
+        if (index >= size || index < 0) {
             throw new IndexOutOfBoundsException("Index is " + index);
         }
         E oldValue = (E) this.elements[index];
@@ -37,13 +38,14 @@ public class CustomArrayList<E> {
         return oldValue;
     }
 
-    public void remove(Object element) {
+    public boolean remove(Object element) {
         for (int i = 0; i < this.size; i++) {
             if (element.equals(this.elements[i])) {
                 fastRemove(i);
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     private void fastRemove(int index) {
@@ -65,14 +67,14 @@ public class CustomArrayList<E> {
         rangeCheck(index);
         if (size == elements.length)
             elements = increaseCapacity();
-        System.arraycopy(this.elements, index, elements, index + 1, size - index);
+        System.arraycopy(this.elements, index, this.elements, index + 1, size - index);
         elements[index] = element;
         this.size++;
     }
 
     private Object[] increaseCapacity() {
         int newCapacity = this.elements.length * 2;
-        return elements = Arrays.copyOf(elements, newCapacity);
+        return elements = Arrays.copyOf(this.elements, newCapacity);
     }
 
     private void rangeCheck(int index) {
@@ -83,13 +85,13 @@ public class CustomArrayList<E> {
 
     public String toString() {
         return "{ " +
-                "elements :" + Arrays.toString(elements) +
-                ", size : " + size +
+                "elements :" + Arrays.toString(this.elements) +
+                ", size : " + this.size +
                 " }";
     }
 
     public void sort(Comparator<E> comparator) {
-        E[] temp = (E[]) elements;
+        E[] temp = (E[]) this.elements;
         int low = 0;
         int high = this.size - 1;
         quickSort(comparator, low, high);
@@ -99,19 +101,19 @@ public class CustomArrayList<E> {
         if (this.size == 0 || low >= high) return;
 
         int middle = low + (high - low) / 2;
-        E border = (E) elements[middle];
+        E border = (E) this.elements[middle];
 
         int i = low;
         int j = high;
         while (i <= j) {
 
-            while (comparator.compare(border, (E) elements[i]) > 0) i++;
-            while (comparator.compare(border, (E) elements[j]) < 0) j--;
+            while (comparator.compare(border, (E) this.elements[i]) > 0) i++;
+            while (comparator.compare(border, (E) this.elements[j]) < 0) j--;
 
             if (i <= j) {
-                E swap = (E) elements[i];
-                elements[i] = elements[j];
-                elements[j] = swap;
+                E swap = (E) this.elements[i];
+                this.elements[i] = this.elements[j];
+                this.elements[j] = swap;
                 i++;
                 j--;
             }
